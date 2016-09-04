@@ -79,6 +79,11 @@ defmodule MyList do
 
   def span2(from, to) when from > to, do: []
   def span2(from, to), do: [from | span2(from + 1, to)]
+
+  # tail recursive
+  def fact(n), do: do_fact(n, 1)
+  defp do_fact(1, result), do: result
+  defp do_fact(n, result), do: do_fact(n - 1, n * result)
 end
 
 # IO.puts MyList.len([1,2,3])
@@ -95,4 +100,6 @@ end
 # IO.inspect MyList.swap([1,9,2,3, 5])
 # IO.inspect MyList.for_location(MyList.test_data, 27)
 # IO.inspect MyList.span(5,9)
-IO.inspect MyList.span2(5,9)
+# IO.inspect MyList.span2(5,9)
+
+IO.inspect MyList.fact(4)
