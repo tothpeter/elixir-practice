@@ -17,8 +17,8 @@ defmodule FileUtil do
   end
 end
 
-lines = FileUtil.read("test_file")
-Enum.each(lines, &IO.inspect(&1))
+# lines = FileUtil.read("test_file")
+# Enum.each(lines, &IO.inspect(&1))
 
 
 defmodule Countdown do
@@ -61,3 +61,39 @@ end
 
 # Enum.take(speaker, 5)
 # Enum.to_list(speaker)
+
+
+# File.read!("test_file")
+#   |> String.split
+#   |> Enum.max_by(&String.length/1)
+#   |> IO.inspect
+#
+# File.open!("test_file")
+#   |> IO.stream(:line)
+#   |> Enum.max_by(&String.length/1)
+#   |> IO.inspect
+
+# File.stream!("test_file")
+#   |> Enum.max_by(&String.length/1)
+#   |> IO.inspect
+
+# Stream.map(1..10_000_000, &(&1+1))
+#   |> Enum.take(5)
+#   |> IO.inspect
+
+# Stream.cycle(~w( white black ))
+#   |> Stream.zip(1..5)
+#   |> Enum.map(fn {color, number} -> ~s(<td class="#{color}">#{number}</td>) end)
+#   |> IO.inspect
+
+# Stream.repeatedly(&:random.uniform/0)
+#   |> Enum.take(3)
+#   |> IO.inspect
+
+# Stream.iterate(0, &(&1+1))
+#   |> Enum.take(5)
+#   |> IO.inspect
+
+Stream.unfold({0, 1}, fn {f1, f2} -> {f1, {f2, f1+f2}} end)
+  |> Enum.take(15)
+  |> IO.inspect
