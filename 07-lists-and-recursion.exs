@@ -102,4 +102,21 @@ end
 # IO.inspect MyList.span(5,9)
 # IO.inspect MyList.span2(5,9)
 
-IO.inspect MyList.fact(4)
+# IO.inspect MyList.fact(4)
+
+words = [
+  "aaa",
+  "bbb",
+  "bbb4",
+  "c"
+]
+
+longest_word = Enum.reduce(words, fn current, longest ->
+  if String.length(current) > String.length(longest)   do
+    current
+  else
+    longest
+  end
+end)
+
+IO.inspect longest_word
