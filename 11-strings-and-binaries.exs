@@ -15,8 +15,17 @@ defmodule MyParser do
   end
 end
 
+# IO.inspect MyParser.number('123')
+# IO.inspect MyParser.number('-123')
+# IO.inspect MyParser.number('+123')
+# IO.inspect MyParser.number('asd')
 
-IO.inspect MyParser.number('123')
-IO.inspect MyParser.number('-123')
-IO.inspect MyParser.number('+123')
-IO.inspect MyParser.number('asd')
+defmodule MyString do
+  def printable_ascii?(char_list) do
+    # char_list |> Enum.all?(fn char -> char in 32..126 end)
+    char_list |> Enum.all?(fn char -> char in ?\s..?~ end)
+  end
+end
+
+IO.inspect MyString.printable_ascii?('123sad')
+IO.inspect MyString.printable_ascii?('∂x/∂y')
