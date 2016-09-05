@@ -88,6 +88,29 @@ defmodule MyEnum do
     _flatten(tail, [head | final])
   end
 
+
+  def is_prime?(3), do: true
+
+  def is_prime?(n) do
+    range_end = round(:math.sqrt(n))
+    range = 3..range_end
+
+    Enum.all?(range, fn(devider) -> rem(n, devider) != 0 end)
+  end
+
+  def list_prime(n) do
+    [2 | do_list_prime(n, 3)]
+  end
+
+  defp do_list_prime(n, current) when n < current, do: []
+
+  defp do_list_prime(n, current) do
+    if is_prime?(current) do
+      [current | do_list_prime(n, current + 2)]
+    else
+      do_list_prime(n, current + 2)
+    end
+  end
 end
 
 # test_list = [1,2,5,3,4,5]
@@ -106,4 +129,5 @@ end
 # IO.inspect MyEnum.split2(test_list, 0)
 # IO.inspect MyEnum.split2(test_list, 30)
 
-IO.inspect MyEnum.flatten([ 1, [ 2, 3, [4] ], 5, [[[6]]]])
+# IO.inspect MyEnum.flatten([ 1, [ 2, 3, [4] ], 5, [[[6]]]])
+IO.inspect MyEnum.list_prime(11)
