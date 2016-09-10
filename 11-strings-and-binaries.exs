@@ -33,13 +33,49 @@ defmodule MyString do
   def anagram2?(word1, word2) do
     Enum.sum(word1) == Enum.sum(word2)
   end
+
+
+  def each(str, func), do: do_each(String.next_codepoint(str), func)
+
+  defp do_each({char, rest}, func) do
+    func.(char)
+    do_each(String.next_codepoint(rest), func)
+  end
+
+  defp do_each(nil, _), do: []
+
+
+  def center(words) do
+    do_center_words(words)
+      |> Enum.map(fn word -> IO.puts(word) end)
+  end
+
+  defp do_center_words(words) do
+    max_length = Enum.reduce(words, 0, &accumulate_max_length(&1, &2))
+
+    Enum.map(words, fn(word) -> do_center_word(word, max_length) end)
+  end
+
+  defp accumulate_max_length(current_word, max_length) do
+    max(max_length, String.length(current_word))
+  end
+
+  defp do_center_word(word, max_length) do
+    word_length = String.length(word)
+    left_padding = round(Float.floor((max_length - word_length) / 2))
+    String.rjust(word, left_padding + word_length)
+  end
 end
 
 # IO.inspect MyString.printable_ascii?('123sad')
 # IO.inspect MyString.printable_ascii?('∂x/∂y')
 
 # IO.inspect MyString.anagram?('asd', 'dsa')
-IO.inspect MyString.anagram2?('asd', 'dsa')
+# IO.inspect MyString.anagram2?('asd', 'dsa')
+
+# MyString.each("asd", fn(char) -> IO.inspect(char) end)
+
+MyString.center(["cat", "zebra", "elephant"])
 
 
 defmodule Calculator do
