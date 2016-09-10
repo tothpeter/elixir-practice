@@ -53,7 +53,7 @@ defmodule MyString do
   defp do_center_words(words) do
     max_length = Enum.reduce(words, 0, &accumulate_max_length(&1, &2))
 
-    Enum.map(words, fn(word) -> do_center_word(word, max_length) end)
+    Enum.map(words, &do_center_word(&1, max_length))
   end
 
   defp accumulate_max_length(current_word, max_length) do
