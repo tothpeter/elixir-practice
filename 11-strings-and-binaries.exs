@@ -75,7 +75,7 @@ end
 
 # MyString.each("asd", fn(char) -> IO.inspect(char) end)
 
-MyString.center(["cat", "zebra", "elephant"])
+# MyString.center(["cat", "zebra", "elephant"])
 
 
 defmodule Calculator do
@@ -143,3 +143,102 @@ end
 
 # IO.inspect Calculator.calculate('123 + 27') # => 150
 # IO.inspect Calculator2.calculate('123 + 27') # => 150
+
+
+defmodule Utf8 do
+  def each(str, func) when is_binary(str), do: do_each(str, func)
+
+  defp do_each(<< head :: utf8, tail :: binary >>, func) do
+    func.(head)
+    each(tail, func)
+  end
+
+  defp do_each(<<>>, _), do: []
+
+
+  def capitalize_sentences(str) do
+    str
+    |> String.split(~r{\.\s+})
+    |> Enum.map(&String.apitalize(&1))
+    |> Enum.join(". ")
+  end
+end
+
+# Utf8.each "∂og", fn char -> IO.puts char end
+# IO.inspect Utf8.capitalize_sentences("oh. a DOG. woof. ")
+
+defmodule SimpleCSV do
+  def parse(file_path) do
+    file = File.open!(file_path)
+
+    field_names = IO.read(file, :line)
+    |> String.strip
+    |> String.split(",")
+
+    IO.stream(file, :line)
+    |> Enum.map(&covert_csv_line(String.strip(&1), field_names))
+  end
+
+  # Expected [ id: 123, ship_to: :NC, net_amount: 100.00 ],
+
+  def covert_csv_line(line, field_names) do
+    line
+    |> String.split(",")
+    |> do_covert_csv_line(field_names, Keyword.new)
+  end
+
+  defp do_covert_csv_line([ current_data | rest_data ], [ current_field | rest_fields ], result) do
+    new_result = result ++ convert_data(current_data, current_field)
+    do_covert_csv_line(rest_data, rest_fields, new_result)
+  end
+
+  defp do_covert_csv_line([], [], result), do: result
+
+  defp convert_data(data, field) do
+    case field do
+      "id" -> [id: String.to_integer(data)]
+      "ship_to" -> [ship_to: String.to_atom(String.lstrip(data, ?:))]
+      "net_amount" -> [net_amount: String.to_float(data)]
+    end
+  end
+end
+
+# IO.inspect SimpleCSV.parse("sales_data.csv")
+
+defmodule SimpleCSV2 do
+  def parse(file_path) do
+    file = File.open!(file_path)
+
+    field_names = IO.read(file, :line)
+    |> String.strip
+    |> String.split(",")
+    |> Enum.map(&String.to_atom(&1))
+
+    IO.stream(file, :line)
+    |> Enum.map(&covert_csv_line(&1, field_names))
+  end
+
+  # Expected [ id: 123, ship_to: :NC, net_amount: 100.00 ],
+
+  def covert_csv_line(line, field_names) do
+    line
+    |> String.strip
+    |> String.split(",")
+    |> do_covert_csv_line(field_names)
+  end
+
+  defp do_covert_csv_line(data, field_names) do
+    converted_data = Enum.map(data, &convert_data(&1))
+    Enum.zip(field_names, converted_data)
+  end
+
+  defp convert_data(data) do
+    cond do
+      Regex.match?(~r{^\d+$}, data) -> String.to_integer(data)
+      Regex.match?(~r{^\d+\.\d+$}, data) -> String.to_float(data)
+      << ?: :: utf8, name :: binary >> = data -> String.to_atom(name)
+    end
+  end
+end
+
+IO.inspect SimpleCSV2.parse("sales_data.csv")
