@@ -22,3 +22,6 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     end
     ```
 
+## Test it in IEX
+`iex -S mix`
+`Issues.GithubIssues.fetch("elixir-lang", "elixir")`
