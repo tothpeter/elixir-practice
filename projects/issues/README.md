@@ -25,3 +25,4 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 ## Test it in IEX
 `iex -S mix`
 `Issues.GithubIssues.fetch("elixir-lang", "elixir")`
+`Issues.CLI.run ["elixir-lang", "elixir"]`
