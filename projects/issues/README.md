@@ -26,3 +26,4 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 `iex -S mix`
 `Issues.GithubIssues.fetch("elixir-lang", "elixir")`
 `Issues.CLI.run ["elixir-lang", "elixir"]`
+`issues elixir-lang elixir 3`
