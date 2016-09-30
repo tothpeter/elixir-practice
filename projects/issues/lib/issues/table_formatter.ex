@@ -3,46 +3,45 @@ defmodule Issues.TableFormatter do
   import Enum, only: [ each: 2, map: 2, map_join: 3, max: 1 ]
 
   def format(data, headers) do
-    data_by_columns = split_into_columns(data, headers)
-    column_widths = column_widths(data_by_columns)
-    io_format = get_io_format(column_widths)
+    data_in_columns = rotate_and_stringify_list(data, headers)
+    column_widths = get_column_widths(data_in_columns)
 
-    puts_one_line_in_columns(io_format, headers)
-    puts_separator(column_widths)
-    puts_in_columns(data_by_columns, io_format)
+    output_format = get_format(column_widths)
+
+    print_line(headers, output_format)
+    print_separator(column_widths)
+    print_body(data_in_columns, output_format)
   end
 
-  def split_into_columns(data_rows, headers) do
+  def rotate_and_stringify_list(list, headers) do
     for header <- headers do
-      for data_row <- data_rows do
-        stringify_data(data_row[header])
-      end
+      for list_item <- list, do: stringify_data(list_item[header])
     end
   end
 
-  def stringify_data(data) when is_binary(data), do: data
+  def stringify_data(data) when is_binary(data) , do: data
   def stringify_data(data), do: to_string(data)
 
-  def column_widths(columns) do
-    for column <- columns, do: column |> map(&String.length/1) |> max
+  def get_column_widths(list) do
+    for list_item <- list, do: list_item |> map(&String.length/1) |> max
   end
 
-  def get_io_format(column_widths) do
-    map_join(column_widths, " | ", fn width -> "~-#{width}s" end) <> "~n"
+  def get_format(column_widths) do
+    map_join(column_widths, " | ", fn(width) -> "~-#{width}s" end) <> "~n"
   end
 
-  def puts_in_columns(data_by_columns, format) do
-    data_by_columns
+  def print_separator(column_widths) do
+    IO.puts map_join(column_widths, "-+-", fn(width) -> List.duplicate("-", width) end)
+  end
+
+  def print_body(data_in_columns, format) do
+    data_in_columns
     |> List.zip
     |> map(&Tuple.to_list/1)
-    |> each(&puts_one_line_in_columns(format, &1))
+    |> each(&print_line(&1, format))
   end
 
-  def puts_one_line_in_columns(format, fields) do
-    :io.format(format, fields)
-  end
-
-  def puts_separator(column_widths) do
-    IO.puts map_join(column_widths, "-+-", fn width -> List.duplicate("-", width) end)
+  def print_line(data, format) do
+    :io.format(format, data)
   end
 end
