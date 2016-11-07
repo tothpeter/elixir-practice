@@ -48,4 +48,17 @@ defmodule FibScheduler do
   end
 end
 
-IO.inspect FibScheduler.run(2, [7, 3, 6])
+# IO.inspect FibScheduler.run(2, [7, 3, 6])
+
+to_process = List.duplicate(37, 20)
+
+Enum.each 1..10, fn num_processes ->
+  { time, result } = :timer.tc(FibScheduler, :run, [num_processes, to_process])
+
+  if num_processes == 1 do
+    IO.puts inspect result
+    IO.puts "\n #   time (s)"
+  end
+
+  :io.format "~2B   ~.2f~n", [num_processes, time/1000000.0]
+end
