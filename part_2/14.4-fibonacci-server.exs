@@ -3,8 +3,8 @@ defmodule FibSolver do
     send(scheduler, { :ready, self })
 
     receive do
-      { :fib, n, client } ->
-        send(client, { :answer, n, fib(n), self })
+      { :fib, n, client, position } ->
+        send(client, { :answer, position, fib(n), self })
         solve(scheduler)
       { :shutdown } -> exit(:normal)
     end
@@ -28,7 +28,7 @@ defmodule FibScheduler do
     receive do
       { :ready, worker_pid } when length(queue) > 0 ->
         [ next | tail ] = queue
-        send(worker_pid, { :fib, next, self })
+        send(worker_pid, { :fib, next, self, length(queue) })
         schedule(worker_pids, tail, results)
 
       { :ready, worker_pid } ->
@@ -38,7 +38,7 @@ defmodule FibScheduler do
           schedule(List.delete(worker_pids, worker_pid), queue, results)
         else
           results
-          |> Enum.sort(fn {n1,_}, {n2,_}  -> n1 <= n2 end)
+          |> Enum.sort(fn {n1,_}, {n2,_} -> n1 >= n2 end)
           |> Enum.map(fn {_, result} -> result end)
         end
 
@@ -48,4 +48,4 @@ defmodule FibScheduler do
   end
 end
 
-IO.inspect FibScheduler.run(2, [1,2,3,4,5,6])
+IO.inspect FibScheduler.run(2, [7, 3, 6])
