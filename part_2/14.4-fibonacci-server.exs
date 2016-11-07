@@ -4,7 +4,7 @@ defmodule FibSolver do
 
     receive do
       { :fib, n, client, position } ->
-        send(client, { :answer, position, fib(n), self })
+        send(client, { :answer, position, fib(n) })
         solve(scheduler)
       { :shutdown } -> exit(:normal)
     end
@@ -42,7 +42,7 @@ defmodule FibScheduler do
           |> Enum.map(fn {_, result} -> result end)
         end
 
-      { :answer, number, worker_result, _worker_pid } ->
+      { :answer, number, worker_result } ->
         schedule(worker_pids, queue, [{number, worker_result} | results])
     end
   end
