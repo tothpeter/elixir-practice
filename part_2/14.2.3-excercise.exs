@@ -9,7 +9,7 @@ defmodule Excercise do
 
     sleep 0
 
-    receive_messages(0)
+    receive_messages
   end
 
   # def worker_proc(_parent_pid, "seniorita"), do: raise :ponies
@@ -18,17 +18,17 @@ defmodule Excercise do
     send parent_pid, "good day #{message}"
   end
 
-  def receive_messages(n) do
+  def receive_messages do
     receive do
-      # {:EXIT, _pid, :normal} -> IO.inspect "a"
       message when is_binary(message) -> IO.puts message
-      _message -> IO.inspect "aaaaaaaaaaaaaaaaaaaaaaaaa"
-
-      IO.inspect n
-      receive_messages(n+1)
+      {:EXIT, _pid, :normal} -> IO.inspect "a"
+      # message -> IO.inspect message
     after 1500 ->
       IO.puts "End"
+      exit :ok
     end
+
+    receive_messages
   end
 end
 
