@@ -16,11 +16,21 @@ defmodule Sequence.Server do
   def handle_cast({:increment, delta}, current_number) do
     { :noreply, current_number + delta }
   end
+
+  def format_status(_reason, [ _pdict, state ]) do
+    [
+      data: [
+        { 'State', "My current state is '#{inspect state}', and I'm happy" },
+        { :i_need_a_monk, "Hololo" }
+      ]
+    ]
+  end
 end
 
 # To test
 # r Sequence.Server
-# { :ok, pid } = GenServer.start_link(Sequence.Server, 100)
+# { :ok, pid } = GenServer.start_link(Sequence.Server, 100, [debug: [:trace]])
 # GenServer.call(pid, :next_number)
 # GenServer.cast(pid, {:increment, 10})
 # GenServer.call(pid, {:set_number, 10})
+# :sys.get_status pid
