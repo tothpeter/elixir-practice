@@ -1,5 +1,20 @@
 defmodule Sequence.Server do
   use GenServer
+  # Client
+
+  def start_link(current_number) do
+    GenServer.start_link(Sequence.Server, current_number, name: __MODULE__)
+  end
+
+  def next_number do
+    GenServer.call(__MODULE__, :next_number)
+  end
+
+  def increment_number(delta) do
+    GenServer.cast(__MODULE__, {:increment, delta})
+  end
+
+  # Server
 
   def handle_call(:next_number, _from, current_number) do
     { :reply, current_number, current_number + 1 }
@@ -26,6 +41,12 @@ defmodule Sequence.Server do
     ]
   end
 end
+
+Sequence.Server.start_link(10)
+
+IO.puts Sequence.Server.next_number
+Sequence.Server.increment_number 5
+IO.puts Sequence.Server.next_number
 
 # To test
 # r Sequence.Server
