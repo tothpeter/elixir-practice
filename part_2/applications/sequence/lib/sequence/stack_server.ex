@@ -9,7 +9,18 @@ defmodule Sequence.StackServer do
 
     { :reply, {last, tail}, tail }
   end
+
+  def handle_cast({:push, new_item}, current_stack) do
+    { :noreply, current_stack ++ [new_item] }
+  end
 end
+
+# To test
+# { :ok, pid } = GenServer.start_link(Sequence.StackServer, [1, 2, 3])
+# GenServer.call(pid, :pop)
+# GenServer.cast(pid, {:push, 4})
+# GenServer.call(pid, :pop)
+
 
 # Just an alternative solution
 defmodule Sequence.StackServer2 do
@@ -20,6 +31,8 @@ defmodule Sequence.StackServer2 do
   def handle_call(:pop, _from, []), do: { :reply, nil, [] }
 
   def handle_call(:pop, _from, [ last | tail ]), do: { :reply, last, tail }
+
+  def handle_cast({:push, new_item}, current_stack), do: { :noreply, [ new_item | current_stack ] }
 end
 
 # To test
