@@ -24,9 +24,9 @@ defmodule Sequence.Server do
     { :reply, new_number, new_number }
   end
 
-  def handle_call(_anything, _from, current_number) do
-    { :reply, {:error, "Dunno what to do"}, current_number }
-  end
+  # def handle_call(_anything, _from, current_number) do
+  #   { :reply, {:error, "Dunno what to do"}, current_number }
+  # end
 
   def handle_cast({:increment, delta}, current_number) do
     { :noreply, current_number + delta }
@@ -40,13 +40,19 @@ defmodule Sequence.Server do
       ]
     ]
   end
+
+  def terminate(reason, _state) do
+    IO.puts "Goin down for a nap. (reason: #{inspect reason})"
+  end
 end
 
-Sequence.Server.start_link(10)
+# {:ok, pid} = Sequence.Server.start_link(10)
+#
+# IO.puts Sequence.Server.next_number
+# Sequence.Server.increment_number 5
+# IO.puts Sequence.Server.next_number
 
-IO.puts Sequence.Server.next_number
-Sequence.Server.increment_number 5
-IO.puts Sequence.Server.next_number
+# GenServer.call(pid, :asd)
 
 # To test
 # r Sequence.Server
