@@ -10,6 +10,7 @@ defmodule Sequence do
     children = [
       # Starts a worker by calling: Sequence.Worker.start_link(arg1, arg2, arg3)
       worker(Sequence.Server, [123]),
+      worker(Sequence.StackServer, [[1,2,3]]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

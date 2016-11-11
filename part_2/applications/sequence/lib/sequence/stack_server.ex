@@ -1,6 +1,22 @@
 defmodule Sequence.StackServer do
   use GenServer
 
+  # Client
+
+  def start_link(current_stack) do
+    GenServer.start_link(Sequence.StackServer, current_stack, name: __MODULE__)
+  end
+
+  def pop do
+    GenServer.call(__MODULE__, :pop)
+  end
+
+  def push(item) do
+    GenServer.cast(__MODULE__, {:push, item})
+  end
+
+  # Server
+
   def handle_call(:pop, _from, []), do: { :reply, nil, [] }
 
   def handle_call(:pop, _from, current_stack) do
