@@ -2,8 +2,8 @@ defmodule Sequence.Server do
   use GenServer
   # Client
 
-  def start_link(current_number) do
-    GenServer.start_link(Sequence.Server, current_number, name: __MODULE__)
+  def start_link(stash_pid) do
+    GenServer.start_link(__MODULE__, stash_pid, name: __MODULE__)
   end
 
   def next_number do
@@ -16,8 +16,13 @@ defmodule Sequence.Server do
 
   # Server
 
-  def handle_call(:next_number, _from, current_number) do
-    { :reply, current_number, current_number + 1 }
+  def init(stash_pid) do
+    current_number =  Sequence.Stash.get_value stash_pid
+    { :ok, {current_number, stash_pid} }
+  end
+
+  def handle_call(:next_number, _from, {current_number, stash_pid}) do
+    { :reply, current_number, {current_number + 1, stash_pid}}
   end
 
   def handle_call({:set_number, new_number}, _from, _current_number) do
@@ -28,8 +33,8 @@ defmodule Sequence.Server do
   #   { :reply, {:error, "Dunno what to do"}, current_number }
   # end
 
-  def handle_cast({:increment, delta}, current_number) do
-    { :noreply, current_number + delta }
+  def handle_cast({:increment, delta}, {current_number, stash_pid}) do
+    { :noreply, {current_number + delta, stash_pid}}
   end
 
   def format_status(_reason, [ _pdict, state ]) do
@@ -41,8 +46,9 @@ defmodule Sequence.Server do
     ]
   end
 
-  def terminate(reason, _state) do
-    IO.puts "Goin down for a nap. (reason: #{inspect reason})"
+  def terminate(_reason, {current_number, stash_pid}) do
+    Sequence.Stash.save_value stash_pid, current_number
+    # IO.puts "Goin down for a nap. (reason: #{inspect reason})"
   end
 end
 
