@@ -50,15 +50,36 @@ end
 
 # IO.inspect FibScheduler.run(2, [7, 3, 6])
 
-to_process = List.duplicate(37, 20)
+# to_process = List.duplicate(37, 20)
+#
+# Enum.each 1..10, fn num_processes ->
+#   { time, result } = :timer.tc(FibScheduler, :run, [num_processes, to_process])
+#
+#   if num_processes == 1 do
+#     IO.puts inspect result
+#     IO.puts "\n #   time (s)"
+#   end
+#
+#   :io.format "~2B   ~.2f~n", [num_processes, time/1000000.0]
+# end
 
-Enum.each 1..10, fn num_processes ->
-  { time, result } = :timer.tc(FibScheduler, :run, [num_processes, to_process])
-
-  if num_processes == 1 do
-    IO.puts inspect result
-    IO.puts "\n #   time (s)"
+# Enhanced fib generator
+defmodule Fib do
+  def of(n) do
+    cache = %{ 0 => 0, 1 => 1 }
+    do_of(n, cache)
   end
 
-  :io.format "~2B   ~.2f~n", [num_processes, time/1000000.0]
+  def do_of(n, cache) do
+    case cache[n] do
+      nil ->
+        { n_1, cache } = do_of(n - 1, cache)
+        result         = n_1 + cache[n-2]
+        { result, Map.put(cache, n, result) }
+      cached_value ->
+        { cached_value, cache }
+    end
+  end
 end
+
+IO.inspect Fib.of(2000)
